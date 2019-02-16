@@ -1,0 +1,22 @@
+USEFUL ARTICLES TO START USING DJANGO:
+
+https://wsvincent.com/django-user-authentication-tutorial-login-and-logout/
+
+https://wsvincent.com/django-user-authentication-tutorial-signup/
+
+https://wsvincent.com/django-user-authentication-tutorial-password-reset/
+
+Uses postgresql db backend
+https://medium.com/riow/django-api-project-from-scratch-5cc5d3b11c88
+
+Github authentication (can be used for facebook and google too)
+https://wsvincent.com/django-allauth-tutorial/
+
+Useful:
+https://wsvincent.com/django-allauth-tutorial-custom-user-model/
+
+DJANGO USAGE:
+
+python manage.py migrate
+
+python manage.py runserver
