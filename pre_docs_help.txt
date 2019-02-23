@@ -1,0 +1,8 @@
+Usefull tipps & links
+
+DJANGO:
+
+-> https://simpleisbetterthancomplex.com/article/2017/03/21/class-based-views-vs-function-based-views.html
+
+MIDDLEWARES:
+https://docs.djangoproject.com/en/2.1/ref/contrib/messages/
