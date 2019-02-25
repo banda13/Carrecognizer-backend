@@ -67,7 +67,7 @@ class Classification(models.Model):
         if self._results is None:
             logger.info('Getting classification results')
             self._results = list(ClassificationResult.objects.filter(classification=self))
-            logger.debug('%d results founded' % len(self._results))
+            logger.debug('%d classification results founded' % len(self._results))
         return self._results
 
     @results.setter

@@ -1,9 +1,12 @@
 import os
 import time
+import json
+import datetime
 
-from ai.classification_consts import BASE_IMAGE_DIR, BASE_FILE_MIME
+from ai.classification_consts import BASE_IMAGE_DIR, BASE_FILE_MIME, CLASSIFICATION_LOGS
 from ai.classifier import CleverClassifier, base_classifier
 from core.models import ImageFile, Classification, Classifier
+from core.serializers import ClassificationSerializer
 from users.models import CustomUser
 import scipy.ndimage
 
@@ -12,7 +15,6 @@ import scipy.ndimage
 import logging
 
 logger = logging.getLogger(__name__)
-
 
 class CClassifier(object):
 
@@ -78,6 +80,12 @@ class CClassifier(object):
         except Exception as e:
             raise ClassificationException('Failed to classify image', e)
 
+    def serialize(self):
+        logger.info('Serializing classification')
+        serializer = ClassificationSerializer(self.classification)
+        with open(CLASSIFICATION_LOGS + 'classlog_' +str(self.classification.id) + '_' + datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S') + '.json', 'w') as logfile:
+            json.dump(serializer.data, logfile, indent=4)
+        return serializer
 
 class ClassificationException(Exception):
 

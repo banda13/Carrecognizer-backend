@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.decorators import method_decorator
@@ -23,11 +23,9 @@ class Classifier(View):
     @method_decorator(login_required)
     def post(self, request):
         if len(request.FILES) == 0:
-            return HttpResponse("Please provide an image")
+            return HttpResponse("Please provide an image", status=400)
         elif len(request.FILES) > 1:
-            return HttpResponse("Please provide only 1 image per classification")
-        else:
-            logger.info("Some files are in the request, processing started..")
+            return HttpResponse("Please provide only 1 image per classification", status=400)
 
         try:
             myfile = request.FILES['carpic']
@@ -36,13 +34,14 @@ class Classifier(View):
             classification.find_creator_and_verify_permissions(request)
             classification.save_picture_and_create_imagedata(myfile)
             classification.classify()
-            return HttpResponse(classification.classification.results)
+            response = classification.serialize()
+            return JsonResponse(response.data, safe=False, status=200)
         except MultiValueDictKeyError as e:
-            print(e)  # TODO log
-            return HttpResponse("Please provide an image")
+            logger.exception('MultiValueDictKeyError')
+            return HttpResponse("Please provide an image", status=400)
         except Exception as e:
-            print(e)
-            return HttpResponse("Unexpected error while processing image, please try again later!")
+            logger.exception('Classification error')
+            return HttpResponse("Unexpected error while processing image, please try again later!", status=400)
 
 
 class ClassificationList(generics.ListAPIView):
