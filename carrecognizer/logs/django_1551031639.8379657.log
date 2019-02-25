@@ -1,0 +1,2 @@
+[24/Feb/2019 19:07:23] INFO [django.server] [log_message:154] "GET / HTTP/1.1" 200 401
+[24/Feb/2019 19:07:23] INFO [django.server] [log_message:154] "GET /core/classify/ HTTP/1.1" 200 20

@@ -11,9 +11,12 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+import time
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+LOG_DIR = BASE_DIR + '/logs/'
+TIMESTAMP = time.time()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
@@ -153,35 +156,89 @@ AUTHENTICATION_BACKENDS = (
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'formatters': {
+#         'console': {
+#             'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+#         },
+#         'file': {
+#             'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+#         },
+#     },
+#     'handlers': {
+#         'console': {
+#             'class': 'logging.StreamHandler',
+#             'formatter': 'console',
+#         },
+#         'file': {
+#             'level': 'DEBUG',
+#             'class': 'logging.FileHandler',
+#             'filename': BASE_DIR + '/logs/%(asctime)s_debug.log',
+#         }
+#         # TODO create specific error handlers, ex email, sentry etc
+#     },
+#     'loggers': {
+#         '': {
+#             'handlers': ['console', 'file'],
+#             'level': 'INFO' # TODO set base log level based on enviroment (dev/prod)
+#         },
+#         'django': {
+#             'level': 'INFO',
+#             'propagate': True,
+#         }
+#     },
+# }
+
+print("OKI i ready")
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
-        'console': {
-            'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
-        },
-        'file': {
-            'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+        'standard': {
+            'format' : "[%(asctime)s] %(levelname)s [%(name)s] [%(funcName)s:%(lineno)s] %(message)s",
+            'datefmt' : "%d/%b/%Y %H:%M:%S"
         },
     },
     'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'console',
-        },
-        'file': {
+        'django': {
             'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR + '/logs/%(asctime)s_debug.log',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOG_DIR + 'django_' + str(TIMESTAMP) + '.log',
+            'maxBytes': 1024*1024*5, # 5 MB
+            'backupCount': 3,
+            'formatter': 'standard'
+        },
+        'info': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOG_DIR + 'info_' + str(TIMESTAMP) + '.log',
+            'maxBytes': 1024*1024*5, # 5 MB
+            'backupCount': 3,
+            'formatter': 'standard'
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'standard'
         }
     },
     'loggers': {
         '': {
-            'handlers': ['console', 'file'],
-            'level': 'DEBUG'
+            'handlers': ['info', "console"],
+            'level': 'DEBUG',
+            'propagate': True
+        },
+        'django.server': {
+            'handlers': ['info'],
+            'level': 'INFO',
+            'propagate': True,
         },
         'django': {
-            'level': 'DEBUG',
+            'handlers': ['django'],
+            'level': 'INFO',
             'propagate': True,
         }
     },

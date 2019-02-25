@@ -1,0 +1,2 @@
+BASE_IMAGE_DIR = "C:\\CR\\IMAGES\\"
+BASE_FILE_MIME = '.jpg'

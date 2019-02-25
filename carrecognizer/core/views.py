@@ -8,6 +8,8 @@ from rest_framework import generics
 from rest_framework.decorators import api_view
 import logging
 
+from ai.classification import CClassifier
+
 logger = logging.getLogger(__name__)
 
 class Classifier(View):
@@ -29,7 +31,10 @@ class Classifier(View):
 
         try:
             myfile = request.FILES['carpic']
-            print(myfile)
+
+            classification = CClassifier()
+            classification.find_creator_and_verify_permissions(request)
+            classification.save_picture_and_create_imagedata(myfile)
             return HttpResponse('oki')
         except MultiValueDictKeyError as e:
             print(e)  # TODO log

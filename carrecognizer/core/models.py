@@ -10,7 +10,7 @@ class ImageFile(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     file_name = models.CharField(max_length=255)
     file_path = models.CharField(max_length=255)
-    is_deleted = models.BooleanField()
+    is_deleted = models.BooleanField(default=False)
     file_size = models.IntegerField()
     width = models.IntegerField()
     height = models.IntegerField()
@@ -20,7 +20,7 @@ class ImageFile(models.Model):
 
 class Classifier(models.Model):
     id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, unique=True)
     is_active = models.BooleanField()
     active_from = models.DateTimeField()
     active_to = models.DateTimeField()
