@@ -19,4 +19,5 @@ data = dict(csrfmiddlewaretoken=csrftoken)
 files = {'carpic': open('430.jpg', 'rb')}
 
 r = client.post(url2, data=data, files=files)
+a = r.text
 print(r.text)

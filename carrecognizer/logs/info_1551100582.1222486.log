@@ -1,0 +1,2 @@
+[25/Feb/2019 14:16:22] DEBUG [core.models] [mockit:165] Mocking done
+[25/Feb/2019 14:16:23] INFO [ai.classifier] [__init__:15] Classifier created: mock

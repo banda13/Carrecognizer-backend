@@ -1,6 +1,9 @@
 import os
+import time
+
 from ai.classification_consts import BASE_IMAGE_DIR, BASE_FILE_MIME
-from core.models import ImageFile, Classification
+from ai.classifier import CleverClassifier, base_classifier
+from core.models import ImageFile, Classification, Classifier
 from users.models import CustomUser
 import scipy.ndimage
 
@@ -18,6 +21,7 @@ class CClassifier(object):
         self.classification = None
         self.image = ImageFile()
         self.classification_result = None
+        self.classifier = None
 
     # main steps of classification
     def find_creator_and_verify_permissions(self, request):
@@ -50,25 +54,29 @@ class CClassifier(object):
                     img_file.write(chunk)
             logger.info("Image saved into %s " % self.image.file_path)
         except Exception as e:
-            raise ClassificationException('asd', e)
-
+            raise ClassificationException('Failed to save picture', e)
 
     def classify(self):
-        logger.info('Classification started for image %s by user %s' % (self.image.file_name, self.creator.username))
-        # get ai
-        self.classification = Classification()
-        self.classification.creator = self.creator
-        self.classification.image = self.image
-        self.classification.save()
-        logger.info("New classification created with id %d" % self.classification.id)
+        try:
+            start_time = time.time()
+            logger.info('Classification started for image %s by user %s' % (self.image.file_name, self.creator.username))
 
+            self.classifier = Classifier.objects.filter(is_active = True)[0]
+            logger.info('Using classifier: %s' % self.classifier.name)
 
+            self.classification = Classification()
+            self.classification.creator = self.creator
+            self.classification.image = self.image
+            self.classification.time = -1
+            self.classification.classifier = self.classifier
+            self.classification.save()
+            logger.info("New classification created with id %d" % self.classification.id)
 
-        # classify
-        pass
-
-    def create_classification_result(self):
-        pass
+            self.classification_result = base_classifier.classify(self.classification)
+            self.classification.time = time.time() - start_time
+            logger.info('Classification ended at: %s' % str(self.classification.time))
+        except Exception as e:
+            raise ClassificationException('Failed to classify image', e)
 
 
 class ClassificationException(Exception):

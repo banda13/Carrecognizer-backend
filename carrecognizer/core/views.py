@@ -27,7 +27,7 @@ class Classifier(View):
         elif len(request.FILES) > 1:
             return HttpResponse("Please provide only 1 image per classification")
         else:
-            print("Some files are in the request, processing started..")
+            logger.info("Some files are in the request, processing started..")
 
         try:
             myfile = request.FILES['carpic']
@@ -35,7 +35,8 @@ class Classifier(View):
             classification = CClassifier()
             classification.find_creator_and_verify_permissions(request)
             classification.save_picture_and_create_imagedata(myfile)
-            return HttpResponse('oki')
+            classification.classify()
+            return HttpResponse(classification.classification.results)
         except MultiValueDictKeyError as e:
             print(e)  # TODO log
             return HttpResponse("Please provide an image")
