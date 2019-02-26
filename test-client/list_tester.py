@@ -18,6 +18,6 @@ csrftoken = client.cookies['csrftoken']
 data = dict(csrfmiddlewaretoken=csrftoken)
 files = {'carpic': open('430.jpg', 'rb')}
 
-r = client.get(url2, data=data)
+r = client.post(url2, data=data, files=files)
 a = r.text
 print(r.text)

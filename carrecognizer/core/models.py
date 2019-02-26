@@ -163,7 +163,6 @@ def mockit():
 
     Classifier.objects.filter(is_active=True).update(is_active=False)
 
-
     claazzifier = Classifier()
     claazzifier.accuracy = 100.0
     claazzifier.name = 'mockinto_' + str(time.time())

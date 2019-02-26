@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -9,6 +9,8 @@ from rest_framework.decorators import api_view
 import logging
 
 from ai.classification import CClassifier
+from core.models import Classification
+from core.serializers import ClassificationSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -44,5 +46,28 @@ class Classifier(View):
             return HttpResponse("Unexpected error while processing image, please try again later!", status=400)
 
 
-class ClassificationList(generics.ListAPIView):
-    pass
+class ClassificationList(generics.ListCreateAPIView):
+    model = Classification
+    serializer_class = ClassificationSerializer
+
+    def get_queryset(self):
+        # NOTE no way to query all classification!
+        user = self.request.user
+        if user.is_anonymous:
+            logger.warning('Could not get classifications for anonymous user')
+            return []
+        logger.info('Getting %s user classifications' % user.username)
+        return Classification.objects.all().filter(creator=user)
+
+
+class ClassificationDetails(generics.RetrieveAPIView):
+    model = Classification
+    serializer_class = ClassificationSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_anonymous:
+            logger.warning('Could not get classification for anonymous user')
+            return []
+        logger.info('Getting %s user classifications for id %d' % user.username)
+        return Classification.objects.all().filter(creator=user)

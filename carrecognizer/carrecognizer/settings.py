@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
 
+    'rest_framework',
+
     'pages',
     'users',
     'core',
@@ -242,4 +244,9 @@ LOGGING = {
             'propagate': True,
         }
     },
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 3
 }
