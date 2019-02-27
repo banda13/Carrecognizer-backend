@@ -32,7 +32,7 @@ class Classifier(View):
         logger.info('Log this into info..')
         return HttpResponse('hurray, i get a get!')
 
-    @method_decorator(login_required)
+    # @method_decorator(login_required)
     def post(self, request):
         if len(request.FILES) == 0:
             return HttpResponse("Please provide an image", status=400)
