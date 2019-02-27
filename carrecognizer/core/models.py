@@ -39,11 +39,11 @@ class Car(models.Model):
     model = models.CharField(max_length=50)
     accuracy = models.FloatField()
 
-    def __init__(self, make, model, accuracy, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.make = make
-        self.model = model
-        self.accuracy = accuracy
+        self.make = args[1]
+        self.model = args[2]
+        self.accuracy = args[3]
 
 
 # fact table
@@ -65,8 +65,12 @@ class Classification(models.Model):
     @property
     def results(self):
         if self._results is None:
+            self._results = []
             logger.info('Getting classification results')
-            self._results = list(ClassificationResult.objects.filter(classification=self))
+            temp_res = list(ClassificationResult.objects.filter(classification=self))
+            for r in temp_res:
+                c = r.cars
+                self._results.append(r)
             logger.debug('%d classification results founded' % len(self._results))
         return self._results
 
@@ -128,8 +132,8 @@ class ClassificationResult(models.Model):
     def cars(self):
         if self._cars is None:
             logger.info('Getting classification result cars')
-            self._results = list(ClassificationResultCar.objects.filter(classification_result=self))
-            logger.debug('%d classification cars founded' % len(self._results))
+            self._cars = list(ClassificationResultCar.objects.filter(classification_result=self))
+            logger.debug('%d classification cars founded' % len(self._cars))
         return self._cars
 
     @cars.setter
@@ -150,8 +154,8 @@ class ClassificationResult(models.Model):
 class ClassificationResultCar(Car):
     classification_result = models.ForeignKey(ClassificationResult, on_delete=models.CASCADE)
 
-    def __init__(self, make, model, accuracy, *args, **kwargs):
-        super().__init__(make, model, accuracy, *args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
 
 class ClassifierCar(Car):

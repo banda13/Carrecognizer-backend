@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
 
     'rest_framework',
+    'corsheaders',
 
     'pages',
     'users',
@@ -61,7 +62,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'carrecognizer.MyMiddleWare.SimpleMiddleware'
+    'carrecognizer.MyMiddleWare.SimpleMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'carrecognizer.urls'
@@ -248,5 +250,11 @@ LOGGING = {
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 3
+    'PAGE_SIZE': 5
 }
+
+CORS_ORIGIN_ALLOW_ALL = False
+
+CORS_ORIGIN_WHITELIST = (
+    'localhost:4200'
+)
