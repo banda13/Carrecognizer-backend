@@ -7,7 +7,7 @@ from ai.classification_consts import BASE_IMAGE_DIR, BASE_FILE_MIME, CLASSIFICAT
 from ai.classifier import CleverClassifier, base_classifier
 from core.models import ImageFile, Classification, Classifier
 from core.serializers import ClassificationSerializer
-from users.models import CustomUser
+from users.models import User
 import scipy.ndimage
 
 # helper class to pass the classification process through the system..
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 class CClassifier(object):
 
     def __init__(self):
-        self.creator = CustomUser()
+        self.creator = User()
         self.classification = None
         self.image = ImageFile()
         self.classification_result = None
@@ -28,7 +28,7 @@ class CClassifier(object):
     # main steps of classification
     def find_creator_and_verify_permissions(self, request):
         self.creator = request.user
-        asd = CustomUser()
+        asd = User()
         logger.info("%s requested a new classification" % self.creator.email)
         # TODO check permissions
         pass

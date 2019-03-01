@@ -33,26 +33,13 @@ class Classifier(models.Model):
     # objects = models.Manager()
 
 
-class Car(models.Model):
-    id = models.AutoField(primary_key=True)
-    make = models.CharField(max_length=50)
-    model = models.CharField(max_length=50)
-    accuracy = models.FloatField()
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.make = args[1]
-        self.model = args[2]
-        self.accuracy = args[3]
-
-
 # fact table
 class Classification(models.Model):
     id = models.AutoField(primary_key=True)
     note = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True) # FIXME needed?
-    creator = models.ForeignKey('users.CustomUser', on_delete=models.CASCADE)
+    creator = models.ForeignKey('users.User', on_delete=models.CASCADE)
     classifier = models.ForeignKey(Classifier, on_delete=models.CASCADE)
     image = models.OneToOneField(ImageFile, on_delete=models.CASCADE)
     time = models.FloatField()
@@ -151,16 +138,20 @@ class ClassificationResult(models.Model):
         logger.info('Classification result car saved with id %d' % car.id)
 
 
-class ClassificationResultCar(Car):
+class ClassificationResultCar(models.Model):
     classification_result = models.ForeignKey(ClassificationResult, on_delete=models.CASCADE)
+    id = models.AutoField(primary_key=True)
+    make = models.CharField(max_length=50)
+    model = models.CharField(max_length=50)
+    accuracy = models.FloatField(default=-1)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
 
-
-class ClassifierCar(Car):
+class ClassifierCar(models.Model):
+    id = models.AutoField(primary_key=True)
+    make = models.CharField(max_length=50)
+    model = models.CharField(max_length=50)
+    accuracy = models.FloatField(default=-1)
     classifier = models.ForeignKey(Classifier, on_delete=models.CASCADE)
-    pass
 
 
 def mockit():

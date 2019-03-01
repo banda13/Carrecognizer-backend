@@ -1,8 +1,8 @@
 from rest_framework import serializers
 
-from core.models import ImageFile, Classifier, Car, Classification, ClassificationFeedback, ClassificationResult, \
+from core.models import ImageFile, Classifier, Classification, ClassificationFeedback, ClassificationResult, \
     ClassificationResultCar, ClassifierCar
-from users.serializers import CustomUserSerializer
+from users.serializers import UserSerializer
 
 
 class ImageFileSerializer(serializers.ModelSerializer):
@@ -16,12 +16,6 @@ class ClassifierSerializer(serializers.ModelSerializer):
     class Meta:
         model = Classifier
         fields = ('id', 'name', 'is_active', 'active_from', 'active_to', 'accuracy')
-
-
-class CarSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Car
-        fields = ('id', 'make', 'model', 'accuracy')
 
 
 class ClassificationResultCarSerializer(serializers.ModelSerializer):
@@ -46,7 +40,7 @@ class ClassificationFeedbackSerializer(serializers.ModelSerializer):
 
 class ClassificationSerializer(serializers.ModelSerializer):
     classifier = ClassifierSerializer(read_only=True)
-    creator = CustomUserSerializer(read_only=True)
+    creator = UserSerializer(read_only=True)
     image = ImageFileSerializer(read_only=True)
     _results = ClassificationResultSerializer(many=True, read_only=False)
     _feedbacks = ClassificationFeedbackSerializer(many=True, read_only=False)

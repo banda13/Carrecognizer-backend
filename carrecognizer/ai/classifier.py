@@ -17,9 +17,21 @@ class CleverClassifier(object):
     def classify(self, classification_data):
         logger.info('Classifying image: %s' % classification_data.image.file_name)
         logger.debug('MOCKED CLASSIFICATION!')
-        main_car = ClassificationResultCar('bmw', 'M5', 100.0)
-        secondary_car = ClassificationResultCar('audi', 'A3', 0.0)
-        secondary_car2 = ClassificationResultCar('adui', 'A5', 0.1)
+        main_car = ClassificationResultCar()
+        main_car.make = 'bmw'
+        main_car.model = 'M5'
+        main_car.accuracy = 100.0
+
+        secondary_car = ClassificationResultCar()
+        secondary_car.make = 'audi'
+        secondary_car.model = 'A3'
+        secondary_car.accuracy = 0.0
+
+        secondary_car2 = ClassificationResultCar()
+        secondary_car2.make = 'audi'
+        secondary_car2.model = 'A5'
+        secondary_car2.accuracy = 10.0
+
         result = ClassificationResult()
         classification_data.add_result(result)
         logger.info('New Classification result created')

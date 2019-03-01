@@ -42,10 +42,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
 
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
+    # 'allauth',
+    # 'allauth.account',
+    # 'allauth.socialaccount',
+    # 'allauth.socialaccount.providers.google',
 
     'rest_framework',
     'corsheaders',
@@ -59,7 +59,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -146,57 +146,12 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # MY SETTINGS!
-AUTH_USER_MODEL = 'users.CustomUser'
+AUTH_USER_MODEL = 'users.User'
 
-LOGIN_REDIRECT_URL = 'loginsuccess'
+# LOGIN_REDIRECT_URL = 'loginsuccess'
 # LOGOUT_REDIRECT_URL = 'home'
 
 SITE_ID = 1
-
-AUTHENTICATION_BACKENDS = (
-    "django.contrib.auth.backends.ModelBackend",
-    "allauth.account.auth_backends.AuthenticationBackend",
-)
-
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = False
-
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'formatters': {
-#         'console': {
-#             'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
-#         },
-#         'file': {
-#             'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
-#         },
-#     },
-#     'handlers': {
-#         'console': {
-#             'class': 'logging.StreamHandler',
-#             'formatter': 'console',
-#         },
-#         'file': {
-#             'level': 'DEBUG',
-#             'class': 'logging.FileHandler',
-#             'filename': BASE_DIR + '/logs/%(asctime)s_debug.log',
-#         }
-#         # TODO create specific error handlers, ex email, sentry etc
-#     },
-#     'loggers': {
-#         '': {
-#             'handlers': ['console', 'file'],
-#             'level': 'INFO' # TODO set base log level based on enviroment (dev/prod)
-#         },
-#         'django': {
-#             'level': 'INFO',
-#             'propagate': True,
-#         }
-#     },
-# }
-
-print("OKI i ready")
 
 LOGGING = {
     'version': 1,
@@ -262,9 +217,13 @@ REST_FRAMEWORK = {
     ),
 }
 
+
 JWT_AUTH = {
-    'JWT_ALLOW_REFRESH': True,
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=3600),
+    'JWT_VERIFY': True,
+    'JWT_VERIFY_EXPIRATION': True,
+    # 'JWT_ALLOW_REFRESH': True,
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=3000),
+    'JWT_AUTH_HEADER_PREFIX': 'andy',
 }
 
 CORS_ORIGIN_ALLOW_ALL = False

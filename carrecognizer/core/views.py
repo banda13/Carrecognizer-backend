@@ -12,6 +12,9 @@ from rest_framework.decorators import api_view
 from django.db.models import Q
 import logging
 
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+
 from ai.classification import CClassifier
 from core.models import Classification
 from core.serializers import ClassificationSerializer
@@ -24,15 +27,15 @@ def RepresentsInt(s):
     except ValueError:
         return False
 
-class Classifier(View):
+class Classifier(APIView):
+    permission_classes = (IsAuthenticated,)
 
-    # @method_decorator(login_required)
     def get(self, request):
         logger.debug('Log whatever you want')
         logger.info('Log this into info..')
         return HttpResponse('hurray, i get a get!')
 
-    # @method_decorator(login_required)
+
     def post(self, request):
         if len(request.FILES) == 0:
             return HttpResponse("Please provide an image", status=400)
@@ -59,14 +62,15 @@ class Classifier(View):
 class ClassificationList(generics.ListCreateAPIView):
     model = Classification
     serializer_class = ClassificationSerializer
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         # NOTE no way to query all classification!
-        # user = self.request.user
-        # if user.is_anonymous:
-        #     logger.warning('Could not get classifications for anonymous user')
-        #     return []
-        # logger.info('Getting %s user classifications' % user.username)
+        user = self.request.user
+        if user.is_anonymous:
+            logger.warning('Could not get classifications for anonymous user')
+            return []
+        logger.info('Getting %s user classifications' % user.username)
         filter = self.request.GET.get('filter', '')
         order = self.request.GET.get('orderby', 'id')
         order_val = self.request.GET.get('order_val', 'asc')  # asc or desc
@@ -99,6 +103,7 @@ class ClassificationList(generics.ListCreateAPIView):
 class ClassificationDetails(generics.RetrieveAPIView):
     model = Classification
     serializer_class = ClassificationSerializer
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         user = self.request.user
