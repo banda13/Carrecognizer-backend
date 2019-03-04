@@ -1,3 +1,6 @@
+import mimetypes
+import os
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.postgres.search import SearchVector, SearchQuery
 from django.db.models.functions import Cast
@@ -12,10 +15,11 @@ from rest_framework.decorators import api_view
 from django.db.models import Q
 import logging
 
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
 
 from ai.classification import CClassifier
+from ai.classification_consts import BASE_IMAGE_DIR
 from core.models import Classification
 from core.serializers import ClassificationSerializer
 logger = logging.getLogger(__name__)
@@ -81,12 +85,12 @@ class ClassificationList(generics.ListCreateAPIView):
             q = SearchQuery(filter)
             vector = SearchVector('image__file_name') # + ..
 
-            classifications = Classification.objects.annotate(search = vector).filter(search=q).order_by('-' + order) if order_val == 'desc' else Classification.objects.annotate(search = vector).filter(search=q)
+            classifications = Classification.objects.annotate(search = vector).filter(search=q).filter(creator=user).order_by('-' + order) if order_val == 'desc' else Classification.objects.annotate(search = vector).filter(search=q).filter(creator=user)
             for c in classifications:
                 r = c.results
                 response.append(c) # lazy loading ehh
         else:
-            classifications = (Classification.objects.all().order_by('-' + order) if order_val == 'desc' else Classification.objects.all())
+            classifications = (Classification.objects.filter(creator=user).order_by('-' + order) if order_val == 'desc' else Classification.objects.filter(creator=user))
             for c in classifications:
                 r = c.results
                 response.append(c)
@@ -112,3 +116,14 @@ class ClassificationDetails(generics.RetrieveAPIView):
             return []
         logger.info('Getting %s user classifications for id %d' % user.username)
         return Classification.objects.all().filter(creator=user)
+
+
+class FileHandler(APIView):
+    permission_classes = (AllowAny,)
+
+    def get(self, request, username, filename):
+        logger.info("Downloading image %s image: %s" % (username,filename))
+
+        full_path = BASE_IMAGE_DIR + username + '\\' + filename
+        with open(full_path, 'rb') as f:
+            return HttpResponse(f.read(), content_type="image/jpg")

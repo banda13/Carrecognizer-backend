@@ -8,4 +8,5 @@ urlpatterns = [
     path('classify/', views.Classifier.as_view(), name='classify'),
     path('classlist/', views.ClassificationList.as_view(), name='classification-list'),
     path('classification/<int:pk>', views.ClassificationDetails.as_view(), name='classification'),
+    path(r'file/<username>/<filename>', views.FileHandler.as_view(), name='file'),
 ]
