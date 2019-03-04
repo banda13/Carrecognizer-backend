@@ -28,7 +28,7 @@ SECRET_KEY = '%r+zl*4^hdo7k=0^)p#kop%86id-_kx@en1a&m-6@4e)^vj(kl'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = ['localhost', 'http://23.102.10.117/', 'carrecognizer.northeurope.cloudapp.azure.com']
 
 
 # Application definition
