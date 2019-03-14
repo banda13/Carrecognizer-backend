@@ -11,4 +11,4 @@ if __name__ == '__main__':
             "available on your PYTHONPATH environment variable? Did you "
             "forget to activate a virtual environment?"
         ) from exc
-    execute_from_command_line(['start-django.py', 'runserver', '--noreload']) # prevent django to call settings from 2 different thread
+    execute_from_command_line(['start-django.py', 'runserver', '--noreload', '0.0.0.0:80']) # prevent django to call settings from 2 different thread

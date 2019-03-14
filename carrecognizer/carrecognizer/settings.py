@@ -25,10 +25,12 @@ TIMESTAMP = time.time()
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '%r+zl*4^hdo7k=0^)p#kop%86id-_kx@en1a&m-6@4e)^vj(kl'
 
+MESSENGER_ACCESS_TOKEN = "EAAECfzD3f4EBACw3TVuZClCSpZBHZC49qDcSJPIROZBUnI0kwHZCxT1UMXks46l0t7ZA3crmdOZBGX1g2eebD92TWB3joT5RKUyncfZBqR03gFdcrhBQ9pGVNqgRMJlhUin3jXggDUtEvtVZCJy4uU7ijIknu5SkfcQ4waQNAMhJh4AZDZD"
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', 'http://23.102.10.117/', 'carrecognizer.northeurope.cloudapp.azure.com']
+ALLOWED_HOSTS = ['localhost', 'http://23.102.10.117/', 'carrecognizer.northeurope.cloudapp.azure.com', '192.168.0.185', '176.63.245.216']
 
 
 # Application definition

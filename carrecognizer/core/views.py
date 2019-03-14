@@ -31,6 +31,26 @@ def RepresentsInt(s):
     except ValueError:
         return False
 
+class MessengerWebhook(APIView):
+    permission_classes = (AllowAny,)
+
+    def get(self, request):
+        logger.info("Messenger GET called")
+        return HttpResponse("GET EVENT RECEIVED", 200)
+
+    def post(self, request):
+        logger.info("Messenger POST called")
+        return HttpResponse("POST EVENT RECEIVED", 200)
+
+    def handleMessage(self):
+        pass
+
+    def handlePostBacks(self):
+        pass
+
+    def callSendAPI(self):
+        pass
+
 class Classifier(APIView):
     permission_classes = (IsAuthenticated,)
 

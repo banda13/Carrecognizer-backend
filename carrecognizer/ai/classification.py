@@ -41,7 +41,11 @@ class CClassifier(object):
             if self.image.mime_type is None:
                 self.image.mime_type = BASE_FILE_MIME
             self.image.file_path = BASE_IMAGE_DIR + self.creator.username + '\\'
-            self.image.width, self.image.height, channels = scipy.ndimage.imread(file).shape
+            try:
+                self.image.width, self.image.height, channels = scipy.ndimage.imread(file).shape
+            except Exception as e:
+                self.image.width, self.image.height = 0, 0
+                logger.warning("Could not identify uploaded image width and height, its ok in facebook uploads")
             self.image.save()
             logger.info("New imagefile saved with id %d " % self.image.id)
 

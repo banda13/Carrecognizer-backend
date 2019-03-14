@@ -26,17 +26,22 @@ class CreateUserAPIView(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
-        user = request.data
-        logger.info("Creating new user", user)
+        try:
+            user = request.data.copy()
+            logger.info("Creating new user", str(user))
 
-        user['username'] = user['email'].split('@')[0]
+            user['username'] = user['email'].split('@')[0]
 
-        serializer = UserSerializer(data=user)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
+            serializer = UserSerializer(data=user)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
 
-        logger.info("New user creation was successful, welcome: %s" % user['username'])
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+            logger.info("New user creation was successful, welcome: %s" % user['username'])
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            logger.error("Registration failed because %s" % str(e), e)
+            res = {'error': e}
+            return Response(res)
 
 
 class UserDetailAPI(RetrieveAPIView):
@@ -60,9 +65,8 @@ class LoginUserAPIView(APIView):
             email = request.data['email']
             password = request.data['password'] # TODO encode this!
             ip, is_routable = get_client_ip(request)
-            referer = request.META['HTTP_REFERER']
 
-            logger.info("Logging in with email %s from %s, ip %s" % (email, referer, ip))
+            logger.info("Logging in with email %s from ip %s" % (email, ip))
 
             user = User.objects.get(email=email, password=password)
             if user:

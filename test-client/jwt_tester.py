@@ -1,6 +1,7 @@
 import json
 import requests
 
+files = {'carpic': open('430.jpg', 'rb')}
 login_url = "http://127.0.0.1:8000/users/login/"
 classify_url = "http://127.0.0.1:8000/core/classify/"
 body = {
