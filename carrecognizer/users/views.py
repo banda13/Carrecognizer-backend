@@ -52,7 +52,7 @@ class UserDetailAPI(RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         if request.user is None:
             return Response("No user provided in the request", status=status.HTTP_401_UNAUTHORIZED)
-        logger.info("Getting user details", request.user)
+        logger.info("Getting user details: %s" % request.user.username)
         serializer = self.serializer_class(request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -84,6 +84,7 @@ class LoginUserAPIView(APIView):
 
                     user.last_login = datetime.datetime.now()
                     user.save()
+                    request.user = user
                     return Response(user_details, status=status.HTTP_200_OK)
 
                 except Exception as e:

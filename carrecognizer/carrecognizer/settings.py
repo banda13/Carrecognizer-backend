@@ -52,9 +52,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
 
-    'pages',
     'users',
     'core',
+    'stats',
 ]
 
 MIDDLEWARE = [
@@ -65,8 +65,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'carrecognizer.MyMiddleWare.SimpleMiddleware',
+    'middleware.JWTAuthenticationMiddleware.JWTAuthenticationMiddleware',
+    'middleware.UserUsageMiddleware.UserUsageMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'carrecognizer.urls'
@@ -207,8 +209,8 @@ LOGGING = {
 }
 
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 5,
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 100,
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ),

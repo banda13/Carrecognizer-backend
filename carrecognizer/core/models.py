@@ -3,8 +3,6 @@ import datetime
 import logging
 from django.db import models
 
-# from carrecognizer.users.models import CustomUser
-
 # LOOOL django orm didn't hear about one-to-many relationships.. ()
 
 logger = logging.getLogger(__name__)

@@ -22,6 +22,8 @@ from ai.classification import CClassifier
 from ai.classification_consts import BASE_IMAGE_DIR
 from core.models import Classification
 from core.serializers import ClassificationSerializer
+from utils.pagination import StandardResultsSetPagination
+
 logger = logging.getLogger(__name__)
 
 def RepresentsInt(s):
@@ -87,6 +89,7 @@ class ClassificationList(generics.ListCreateAPIView):
     model = Classification
     serializer_class = ClassificationSerializer
     permission_classes = (IsAuthenticated,)
+    pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
         # NOTE no way to query all classification!
