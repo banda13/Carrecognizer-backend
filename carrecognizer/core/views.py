@@ -85,6 +85,27 @@ class Classifier(APIView):
             return HttpResponse("Unexpected error while processing image, please try again later!", status=400)
 
 
+class MessengerClassifier(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+
+        try:
+            myfile_url = request.POST.get("url", None)
+
+            classification = CClassifier()
+            classification.find_creator_and_verify_permissions(request)
+            classification.save_picture_and_create_imagedata_from_url(myfile_url)
+            classification.classify()
+            response = classification.serialize()
+            return JsonResponse(response.data, safe=False, status=200)
+        except MultiValueDictKeyError as e:
+            logger.exception('MultiValueDictKeyError')
+            return HttpResponse("Please provide an image", status=400)
+        except Exception as e:
+            logger.exception('Classification error')
+            return HttpResponse("Unexpected error while processing image, please try again later!", status=400)
+
 class ClassificationList(generics.ListCreateAPIView):
     model = Classification
     serializer_class = ClassificationSerializer

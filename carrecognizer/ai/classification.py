@@ -1,7 +1,11 @@
 import os
+import cv2
 import time
 import json
+import requests
+import urllib.request
 import datetime
+import numpy as np
 
 from ai.classification_consts import BASE_IMAGE_DIR, BASE_FILE_MIME, CLASSIFICATION_LOGS
 from ai.classifier import CleverClassifier, base_classifier
@@ -38,7 +42,7 @@ class CClassifier(object):
         try:
             self.image.file_name, self.image.mime_type = os.path.splitext(file.name)
             self.image.file_size = file.size
-            if self.image.mime_type is None:
+            if self.image.mime_type is None or self.image.mime_type == "":
                 self.image.mime_type = BASE_FILE_MIME
             self.image.file_path = BASE_IMAGE_DIR + self.creator.username + '\\'
             try:
@@ -58,6 +62,34 @@ class CClassifier(object):
             with open(self.image.file_path + filename + self.image.mime_type, 'wb+') as img_file:
                 for chunk in file.chunks():
                     img_file.write(chunk)
+            logger.info("Image saved into %s " % self.image.file_path)
+        except Exception as e:
+            raise ClassificationException('Failed to save picture', e)
+
+    def save_picture_and_create_imagedata_from_url(self, url):
+        logger.info("Processing image file data from %s " % url)
+        try:
+            self.image.file_name = str(time.time()) + "_facebook"
+            self.image.mime_type = ".jpg"
+            self.image.file_size = 0
+            if self.image.mime_type is None or self.image.mime_type == "":
+                self.image.mime_type = BASE_FILE_MIME
+            self.image.file_path = BASE_IMAGE_DIR + self.creator.username + '\\'
+            try:
+                self.image.width, self.image.height, channels = 0, 0, 0
+            except Exception as e:
+                self.image.width, self.image.height = 0, 0
+                logger.warning("Could not identify uploaded image width and height, its ok in facebook uploads")
+            self.image.save()
+            logger.info("New imagefile saved with id %d " % self.image.id)
+
+            filename = str(self.image.id) + '_' + self.image.file_name
+
+            if not os.path.exists(self.image.file_path):
+                os.makedirs(self.image.file_path)
+                logger.info("New image directory created for user %s " % self.creator.username)
+
+            urllib.request.urlretrieve(url, self.image.file_path + filename + self.image.mime_type)
             logger.info("Image saved into %s " % self.image.file_path)
         except Exception as e:
             raise ClassificationException('Failed to save picture', e)
