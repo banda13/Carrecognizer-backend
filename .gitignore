@@ -1,4 +1,7 @@
 .idea/
-__pycache__/
+**/__pycache__/
 *.pyc
+*.jpg
 carrecognizer/logs/*
+carrecognizer/resources/*
+**/migrations/*
