@@ -1,11 +1,14 @@
 import time
 import datetime
 import logging
+
+from django.contrib.postgres.fields import ArrayField, JSONField
 from django.db import models
 
 # LOOOL django orm didn't hear about one-to-many relationships.. ()
 
 logger = logging.getLogger(__name__)
+
 
 class ImageFile(models.Model):
     id = models.AutoField(primary_key=True)
@@ -23,12 +26,41 @@ class ImageFile(models.Model):
 class Classifier(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50, unique=True)
+    description = models.CharField(max_length=255)
     is_active = models.BooleanField()
     active_from = models.DateTimeField()
     active_to = models.DateTimeField()
-    accuracy = models.FloatField()
 
-    # objects = models.Manager()
+    train_size = models.IntegerField()
+    validation_size = models.IntegerField()
+    test_size = models.IntegerField()
+    image_width = models.IntegerField()
+    image_height = models.IntegerField()
+
+    learning_rate = models.FloatField()
+    batch_size = models.IntegerField()
+    epochs = models.IntegerField()
+    workers = models.IntegerField()
+    fine_tune_from = models.IntegerField()
+
+    transfer_train_time = models.IntegerField()
+    transfer_train_accuracy = models.FloatField()
+    transfer_train_loss = models.FloatField()
+
+    fine_tune_time = models.IntegerField()
+    fine_tune_accuracy = models.FloatField()
+    fine_tune_loss = models.FloatField()
+
+    test_accuracy = models.FloatField()
+    test_time = models.FloatField()
+    test_top3_accuracy = models.FloatField()
+    test_probability = models.FloatField()
+
+    acc = JSONField()  # its postgresql specific!!
+    val_acc = JSONField()
+    loss = JSONField()
+    val_loss = JSONField()
+    raw_json = JSONField()
 
 
 # fact table
@@ -54,7 +86,7 @@ class Classification(models.Model):
             logger.info('Getting classification results')
             temp_res = list(ClassificationResult.objects.filter(classification=self))
             for r in temp_res:
-                c = r.cars
+                c = r.items
                 self._results.append(r)
             logger.debug('%d classification results founded' % len(self._results))
         return self._results
@@ -111,62 +143,49 @@ class ClassificationResult(models.Model):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._cars = None
+        self._items = None
 
     @property
-    def cars(self):
-        if self._cars is None:
-            logger.info('Getting classification result cars')
-            self._cars = list(ClassificationResultCar.objects.filter(classification_result=self))
-            logger.debug('%d classification cars founded' % len(self._cars))
-        return self._cars
+    def items(self):
+        if self._items is None:
+            logger.info('Getting classification result items')
+            self._items = list(ClassificationResultItem.objects.filter(classification_result=self))
+            logger.debug('%d classification items founded' % len(self._items))
+        return self._items
 
-    @cars.setter
-    def cars(self, value):
-        raise Exception('DO not set classification result cars! U can only add a new one!')
+    @items.setter
+    def items(self, value):
+        raise Exception('DO NOT set classification result items! U can only add a new one!')
 
-    def add_car(self, car):
-        logger.info('Adding new classification result car')
-        c = self.cars  # load results if needed
-        car.classification_result = self
+    def add_item(self, item):
+        logger.info('Adding new classification result item')
+        c = self.items  # load results if needed
+        item.classification_result = self
         if c is None:
-            self._cars = []
-        self._cars.append(car)
-        car.save()
-        logger.info('Classification result car saved with id %d' % car.id)
+            self._items = []
+        self._items.append(item)
+        item.save()
+        logger.info('Classification result item saved with id %d' % item.id)
 
 
-class ClassificationResultCar(models.Model):
+class ClassificationResultItem(models.Model):
     classification_result = models.ForeignKey(ClassificationResult, on_delete=models.CASCADE)
     id = models.AutoField(primary_key=True)
-    make = models.CharField(max_length=50)
-    model = models.CharField(max_length=50)
+    name = models.CharField(max_length=255)
     accuracy = models.FloatField(default=-1)
 
 
-class ClassifierCar(models.Model):
+class ClassifierItem(models.Model):
     id = models.AutoField(primary_key=True)
-    make = models.CharField(max_length=50)
-    model = models.CharField(max_length=50)
-    accuracy = models.FloatField(default=-1)
+    name = models.CharField(max_length=200)
+    accuracy = models.FloatField()
+    top3_accuracy = models.FloatField()
+    avg_probability = models.FloatField()
+    max_probability = models.FloatField()
+    min_probability = models.FloatField()
+    plot_dir = models.CharField(max_length=255)
     classifier = models.ForeignKey(Classifier, on_delete=models.CASCADE)
 
-
-def mockit():
-
-    Classifier.objects.filter(is_active=True).update(is_active=False)
-
-    claazzifier = Classifier()
-    claazzifier.accuracy = 100.0
-    claazzifier.name = 'mockinto_' + str(time.time())
-    claazzifier.active_from = datetime.datetime.now()
-    claazzifier.active_to = datetime.datetime(3019, 2, 25)
-    claazzifier.is_active = True
-    claazzifier.save()
-
-    logger.debug('Mocking done')
-
-mockit()
 
 
 

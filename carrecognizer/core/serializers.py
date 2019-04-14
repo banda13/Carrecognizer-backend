@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from core.models import ImageFile, Classifier, Classification, ClassificationFeedback, ClassificationResult, \
-    ClassificationResultCar, ClassifierCar
+    ClassificationResultItem, ClassifierCar
 from users.serializers import UserSerializer
 
 
@@ -20,7 +20,7 @@ class ClassifierSerializer(serializers.ModelSerializer):
 
 class ClassificationResultCarSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ClassificationResultCar
+        model = ClassificationResultItem
         fields = ('id', 'make', 'model', 'accuracy')
 
 
