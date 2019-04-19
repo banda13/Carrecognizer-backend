@@ -8,7 +8,8 @@ import datetime
 import numpy as np
 
 from ai.classification_consts import BASE_IMAGE_DIR, BASE_FILE_MIME, CLASSIFICATION_LOGS
-from ai.classifier import CleverClassifier, base_classifier
+from carrecognizer.apps import MyAppConfig
+
 from core.models import ImageFile, Classification, Classifier
 from core.serializers import ClassificationSerializer
 from users.models import User
@@ -110,7 +111,7 @@ class CClassifier(object):
             self.classification.save()
             logger.info("New classification created with id %d" % self.classification.id)
 
-            self.classification_result = base_classifier.classify(self.classification)
+            self.classification_result = MyAppConfig.base_classifier.classify(self.classification)
             self.classification.time = time.time() - start_time
             logger.info('Classification ended at: %s' % str(self.classification.time))
         except Exception as e:
@@ -122,6 +123,7 @@ class CClassifier(object):
         with open(CLASSIFICATION_LOGS + 'classlog_' +str(self.classification.id) + '_' + datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S') + '.json', 'w') as logfile:
             json.dump(serializer.data, logfile, indent=4)
         return serializer
+
 
 class ClassificationException(Exception):
 
