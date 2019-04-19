@@ -26,41 +26,44 @@ class ImageFile(models.Model):
 class Classifier(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50, unique=True)
-    description = models.CharField(max_length=255)
-    is_active = models.BooleanField()
-    active_from = models.DateTimeField()
-    active_to = models.DateTimeField()
+    description = models.CharField(max_length=255, null=True)
+    is_active = models.BooleanField(default=False)
+    active_from = models.DateTimeField(null=True)
+    active_to = models.DateTimeField(null=True)
 
     train_size = models.IntegerField()
     validation_size = models.IntegerField()
-    test_size = models.IntegerField()
+    test_size = models.IntegerField(null=True)
     image_width = models.IntegerField()
     image_height = models.IntegerField()
 
-    learning_rate = models.FloatField()
-    batch_size = models.IntegerField()
-    epochs = models.IntegerField()
-    workers = models.IntegerField()
-    fine_tune_from = models.IntegerField()
+    learning_rate = models.FloatField(null=True)
+    batch_size = models.IntegerField(null=True)
+    epochs = models.IntegerField(null=True)
+    workers = models.IntegerField(null=True)
+    fine_tune_from = models.IntegerField(null=True)
+    final_plot = models.CharField(max_length=255, null=True)
 
-    transfer_train_time = models.IntegerField()
-    transfer_train_accuracy = models.FloatField()
-    transfer_train_loss = models.FloatField()
+    transfer_train_time = models.IntegerField(null=True)
+    transfer_train_accuracy = models.FloatField(null=True)
+    transfer_train_loss = models.FloatField(null=True)
+    transfer_train_plot = models.CharField(max_length=255, null=True)
 
-    fine_tune_time = models.IntegerField()
-    fine_tune_accuracy = models.FloatField()
-    fine_tune_loss = models.FloatField()
+    fine_tune_time = models.IntegerField(null=True)
+    fine_tune_accuracy = models.FloatField(null=True)
+    fine_tune_loss = models.FloatField(null=True)
+    fine_tune_plot = models.CharField(max_length=255, null=True)
 
-    test_accuracy = models.FloatField()
-    test_time = models.FloatField()
-    test_top3_accuracy = models.FloatField()
-    test_probability = models.FloatField()
+    test_accuracy = models.FloatField(null=True)
+    test_time = models.FloatField(null=True)
+    test_top3_accuracy = models.FloatField(null=True)
+    test_probability = models.FloatField(null=True)
 
-    acc = JSONField()  # its postgresql specific!!
-    val_acc = JSONField()
-    loss = JSONField()
-    val_loss = JSONField()
-    raw_json = JSONField()
+    acc = JSONField(null=True)  # its postgresql specific!!
+    val_acc = JSONField(null=True)
+    loss = JSONField(null=True)
+    val_loss = JSONField(null=True)
+    raw_json = JSONField(null=True)
 
 
 # fact table
@@ -83,12 +86,11 @@ class Classification(models.Model):
     def results(self):
         if self._results is None:
             self._results = []
-            logger.info('Getting classification results')
             temp_res = list(ClassificationResult.objects.filter(classification=self))
             for r in temp_res:
                 c = r.items
                 self._results.append(r)
-            logger.debug('%d classification results founded' % len(self._results))
+            # logger.debug('%d classification results founded' % len(self._results))
         return self._results
 
     @results.setter
@@ -96,19 +98,18 @@ class Classification(models.Model):
         raise Exception('DO not set classification results! U can add a new!')
 
     def add_result(self, result):
-        logger.info('Adding new classification result')
+        logger.debug('Adding new classification result %s' % str(result))
         res = self.results # load results if needed
         result.classification = self
         if res is None:
             self._results = []
         self._results.append(result)
         result.save()
-        logger.info('Classification result saved with id %d' % result.id)
+        logger.debug('Classification result saved with id %d' % result.id)
 
     @property
     def feedbacks(self):
         if self._feedbacks is None:
-            logger.info('Getting classification feedbacks')
             self._feedbacks = list(ClassificationFeedback.objects.filter(classification=self))
             logger.debug('%d feedbacks founded' % len(self._feedbacks))
         return self._feedbacks
@@ -118,14 +119,14 @@ class Classification(models.Model):
         raise Exception('DO not set classification feedbacks! U can add a new!')
 
     def add_feedback(self, feedback):
-        logger.info('Adding new classification feedback')
+        logger.debug('Adding new classification feedback %s' % str(feedback))
         fed = self.feedbacks  # load feedbacks if needed
         feedback.classification = self
         if fed is None:
             self._feedbacks = []
         self._feedbacks.append(feedback)
         feedback.save()
-        logger.info('Classification feedback saved with id %d' % feedback.id)
+        logger.debug('Classification feedback saved with id %d' % feedback.id)
 
 
 class ClassificationFeedback(models.Model):
@@ -148,9 +149,7 @@ class ClassificationResult(models.Model):
     @property
     def items(self):
         if self._items is None:
-            logger.info('Getting classification result items')
             self._items = list(ClassificationResultItem.objects.filter(classification_result=self))
-            logger.debug('%d classification items founded' % len(self._items))
         return self._items
 
     @items.setter
@@ -158,14 +157,14 @@ class ClassificationResult(models.Model):
         raise Exception('DO NOT set classification result items! U can only add a new one!')
 
     def add_item(self, item):
-        logger.info('Adding new classification result item')
+        logger.debug('Adding new classification result item %s' % str(item))
         c = self.items  # load results if needed
         item.classification_result = self
         if c is None:
             self._items = []
         self._items.append(item)
         item.save()
-        logger.info('Classification result item saved with id %d' % item.id)
+        logger.debug('Classification result item saved with id %d' % item.id)
 
 
 class ClassificationResultItem(models.Model):

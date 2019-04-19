@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from core.models import ImageFile, Classifier, Classification, ClassificationFeedback, ClassificationResult, \
-    ClassificationResultItem, ClassifierCar
+    ClassificationResultItem, ClassifierItem
 from users.serializers import UserSerializer
 
 
@@ -12,24 +12,28 @@ class ImageFileSerializer(serializers.ModelSerializer):
                   'file_size', 'width', 'height', 'mime_type')
 
 
+class SimpleClassifierSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Classifier
+        fields = ('id', 'name')
+
 class ClassifierSerializer(serializers.ModelSerializer):
     class Meta:
         model = Classifier
-        fields = ('id', 'name', 'is_active', 'active_from', 'active_to', 'accuracy')
+        fields = ('id', 'name')
 
-
-class ClassificationResultCarSerializer(serializers.ModelSerializer):
+class ClassificationResultItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = ClassificationResultItem
-        fields = ('id', 'make', 'model', 'accuracy')
+        fields = ('id', 'name', 'accuracy')
 
 
 class ClassificationResultSerializer(serializers.ModelSerializer):
-    _cars = ClassificationResultCarSerializer(many=True, read_only=True)
+    _items = ClassificationResultItemSerializer(many=True, read_only=True)
 
     class Meta:
         model = ClassificationResult
-        fields = ('id', '_cars')
+        fields = ('id', '_items')
 
 
 class ClassificationFeedbackSerializer(serializers.ModelSerializer):
@@ -39,7 +43,7 @@ class ClassificationFeedbackSerializer(serializers.ModelSerializer):
 
 
 class ClassificationSerializer(serializers.ModelSerializer):
-    classifier = ClassifierSerializer(read_only=True)
+    classifier = SimpleClassifierSerializer(read_only=True)
     creator = UserSerializer(read_only=True)
     image = ImageFileSerializer(read_only=True)
     _results = ClassificationResultSerializer(many=True, read_only=False)
@@ -51,8 +55,8 @@ class ClassificationSerializer(serializers.ModelSerializer):
             'id', 'note', 'created_at', 'updated_at','creator', 'classifier', 'image', 'time', '_results', '_feedbacks')
 
 
-class ClassifierCarSerializer(serializers.ModelSerializer):
+class ClassifierItemSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ClassifierCar
-        fields = ('id', 'make', 'model', 'accuracy')
+        model = ClassifierItem
+        fields = ('id', 'name', 'accuracy')
 
