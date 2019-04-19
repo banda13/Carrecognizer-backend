@@ -1,18 +1,7 @@
-import mimetypes
-import os
-
-from django.contrib.auth.decorators import login_required
 from django.contrib.postgres.search import SearchVector, SearchQuery
-from django.db.models.functions import Cast
-from django.forms import CharField
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render, get_object_or_404
 from django.utils.datastructures import MultiValueDictKeyError
-from django.utils.decorators import method_decorator
-from django.views import View
 from rest_framework import generics
-from rest_framework.decorators import api_view
-from django.db.models import Q
 import logging
 
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -26,32 +15,6 @@ from utils.pagination import StandardResultsSetPagination
 
 logger = logging.getLogger(__name__)
 
-def RepresentsInt(s):
-    try:
-        int(s)
-        return True
-    except ValueError:
-        return False
-
-class MessengerWebhook(APIView):
-    permission_classes = (AllowAny,)
-
-    def get(self, request):
-        logger.info("Messenger GET called")
-        return HttpResponse("GET EVENT RECEIVED", 200)
-
-    def post(self, request):
-        logger.info("Messenger POST called")
-        return HttpResponse("POST EVENT RECEIVED", 200)
-
-    def handleMessage(self):
-        pass
-
-    def handlePostBacks(self):
-        pass
-
-    def callSendAPI(self):
-        pass
 
 class Classifier(APIView):
     permission_classes = (IsAuthenticated,)
@@ -60,7 +23,6 @@ class Classifier(APIView):
         logger.debug('Log whatever you want')
         logger.info('Log this into info..')
         return HttpResponse('hurray, i get a get!')
-
 
     def post(self, request):
         if len(request.FILES) == 0:

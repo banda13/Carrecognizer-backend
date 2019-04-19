@@ -1,6 +1,7 @@
 import os
 import sys
 
+
 if __name__ == '__main__':
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'carrecognizer.settings')
     try:
@@ -12,4 +13,3 @@ if __name__ == '__main__':
             "forget to activate a virtual environment?"
         ) from exc
     execute_from_command_line(['start-django.py', 'runserver', '--noreload', '0.0.0.0:80']) # prevent django to call settings from 2 different thread
-
