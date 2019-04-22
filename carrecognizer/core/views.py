@@ -11,6 +11,7 @@ from ai.classification import CClassifier
 from ai.classification_consts import BASE_IMAGE_DIR
 from core.models import Classification
 from core.serializers import ClassificationSerializer
+from utils.cr_utils import get_error_response
 from utils.pagination import StandardResultsSetPagination
 
 logger = logging.getLogger(__name__)
@@ -41,10 +42,10 @@ class Classifier(APIView):
             return JsonResponse(response.data, safe=False, status=200)
         except MultiValueDictKeyError as e:
             logger.exception('MultiValueDictKeyError')
-            return HttpResponse("Please provide an image", status=400)
+            return get_error_response("Please provide an image")
         except Exception as e:
             logger.exception('Classification error')
-            return HttpResponse("Unexpected error while processing image, please try again later!", status=400)
+            return get_error_response("Unexpected error while processing image, please try again later!", str(e))
 
 
 class MessengerClassifier(APIView):
@@ -63,10 +64,11 @@ class MessengerClassifier(APIView):
             return JsonResponse(response.data, safe=False, status=200)
         except MultiValueDictKeyError as e:
             logger.exception('MultiValueDictKeyError')
-            return HttpResponse("Please provide an image", status=400)
+            return get_error_response("Please provide an image")
         except Exception as e:
             logger.exception('Classification error')
-            return HttpResponse("Unexpected error while processing image, please try again later!", status=400)
+            return get_error_response("Unexpected error while processing image, please try again later!", str(e))
+
 
 class ClassificationList(generics.ListCreateAPIView):
     model = Classification
