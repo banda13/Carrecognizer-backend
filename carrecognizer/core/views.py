@@ -1,23 +1,25 @@
 from django.contrib.postgres.search import SearchVector, SearchQuery
 from django.http import HttpResponse, JsonResponse
 from django.utils.datastructures import MultiValueDictKeyError
-from rest_framework import generics
+from django.views.generic import DetailView
+from rest_framework import generics, status
 import logging
 
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from ai.classification import CClassifier
 from ai.classification_consts import BASE_IMAGE_DIR
-from core.models import Classification
-from core.serializers import ClassificationSerializer
+from core.models import Classification, Classifier
+from core.serializers import ClassificationSerializer, ClassifierSerializer
 from utils.cr_utils import get_error_response
 from utils.pagination import StandardResultsSetPagination
 
 logger = logging.getLogger(__name__)
 
 
-class Classifier(APIView):
+class ClassifierView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
@@ -112,7 +114,7 @@ class ClassificationList(generics.ListCreateAPIView):
         return context
 
 
-class ClassificationDetails(generics.RetrieveAPIView):
+class ClassificationDetailsView(generics.RetrieveAPIView):
     model = Classification
     serializer_class = ClassificationSerializer
     permission_classes = (IsAuthenticated,)
@@ -135,3 +137,17 @@ class FileHandler(APIView):
         full_path = BASE_IMAGE_DIR + username + '\\' + filename
         with open(full_path, 'rb') as f:
             return HttpResponse(f.read(), content_type="image/jpg")
+
+
+class ClassifierDetailsView(generics.RetrieveAPIView):
+    # permission_classes = (IsAuthenticated,)
+    serializer_class = ClassifierSerializer
+
+    def get(self, request, *args, **kwargs):
+        return Response(self.serializer_class(Classifier.objects.filter(is_active=True).first()).data, status=status.HTTP_200_OK)
+
+
+# class ClassifierPlotView(generics.RetrieveAPIView):
+#     permission_classes = (IsAuthenticated,)
+#
+#     def get(self, request, name):

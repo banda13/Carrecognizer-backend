@@ -17,10 +17,17 @@ class SimpleClassifierSerializer(serializers.ModelSerializer):
         model = Classifier
         fields = ('id', 'name')
 
+
 class ClassifierSerializer(serializers.ModelSerializer):
     class Meta:
         model = Classifier
-        fields = ('id', 'name')
+        fields = ('id', 'name', 'description', 'active_from', 'train_size', 'validation_size', 'test_size',
+                  'image_width', 'image_height',
+                  'transfer_train_time', 'transfer_train_accuracy', 'transfer_train_loss',
+                  'fine_tune_time', 'fine_tune_accuracy', 'fine_tune_loss',
+                  'test_accuracy', 'test_time', 'test_top3_accuracy', 'test_probability',
+                  'final_plot', 'transfer_train_plot', 'fine_tune_plot')
+
 
 class ClassificationResultItemSerializer(serializers.ModelSerializer):
     class Meta:
