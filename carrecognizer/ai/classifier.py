@@ -23,7 +23,7 @@ classifier_resource_base = "resources/"
 
 CLASS_INDICES_FILENAME = 'class_indices.npy'
 MODEL_FILENAME = 'model.h5'
-PROPS_FILENAME = 'prop.json'
+PROPS_FILENAME = 'props.json'
 FINAL_PLOT = 'final.png'
 TRANSFER_TRAIN_PLOT = 'transfer_train.png'
 FINE_TUNE_PLOT = 'fine_tune.png'
@@ -70,7 +70,7 @@ class CleverClassifier(object,  metaclass=Singleton):
         self.model_path = self.base_dir + MODEL_FILENAME
         self.img_width, self.img_height = self.classifier.image_width, self.classifier.image_height
         logger.info("Setting up model : %s from %s" % (self.name, self.model_path))
-        self.class_dictionary = np.load(class_indices_path).item()
+        self.class_dictionary = np.load(class_indices_path, allow_pickle=True).item()
         self.num_classes = len(self.class_dictionary)
         self.inv_map = {v: k for k, v in self.class_dictionary.items()}
         logger.info('Classifier created: %s' % name)

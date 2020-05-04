@@ -65,5 +65,6 @@ class ClassificationSerializer(serializers.ModelSerializer):
 class ClassifierItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = ClassifierItem
-        fields = ('id', 'name', 'accuracy')
+        fields = ('id', 'name', 'accuracy', 'top3_accuracy', 'avg_probability', 'max_probability', 'min_probability',
+                  'plot_dir', 'classifier_id')
 
