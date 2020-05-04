@@ -186,6 +186,12 @@ class ClassifierItem(models.Model):
     classifier = models.ForeignKey(Classifier, on_delete=models.CASCADE)
 
 
+class ItemDetails(models.Model):
+    id = models.AutoField(primary_key=True)
+    classifier_item = models.ForeignKey(ClassifierItem, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    details = JSONField(null=True)
+
 
 
 

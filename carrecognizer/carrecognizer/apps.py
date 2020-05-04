@@ -3,7 +3,7 @@ from django.apps import AppConfig
 
 
 class MyAppConfig(AppConfig):
-    base_classifier = CleverClassifier('Cabat')
+    base_classifier = CleverClassifier('Haupaca')
 
     def ready(self):
         pass # Idk when its called, it did not worked for me!

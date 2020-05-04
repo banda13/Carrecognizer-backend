@@ -137,17 +137,3 @@ class FileHandler(APIView):
         full_path = BASE_IMAGE_DIR + username + '\\' + filename
         with open(full_path, 'rb') as f:
             return HttpResponse(f.read(), content_type="image/jpg")
-
-
-class ClassifierDetailsView(generics.RetrieveAPIView):
-    # permission_classes = (IsAuthenticated,)
-    serializer_class = ClassifierSerializer
-
-    def get(self, request, *args, **kwargs):
-        return Response(self.serializer_class(Classifier.objects.filter(is_active=True).first()).data, status=status.HTTP_200_OK)
-
-
-# class ClassifierPlotView(generics.RetrieveAPIView):
-#     permission_classes = (IsAuthenticated,)
-#
-#     def get(self, request, name):
