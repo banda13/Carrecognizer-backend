@@ -4,6 +4,7 @@ from stats.models import ApiUsage
 
 logger = logging.getLogger(__name__)
 
+
 class UserUsageMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response

@@ -39,7 +39,7 @@ class ApiUsageList(generics.ListCreateAPIView):
 
         logger.info('%s requesting api usage after %d-%d-%d %d:%d:%d' % (user.username, year, month, day, hour, minutes, seconds))
         cursor = connection.cursor()
-        raw_sql = '''SELECT * FROM stats_apiusage where time >= '%s-%s-%s %s:%s:%s+01' '''
+        raw_sql = '''SELECT * FROM stats_apiusage where time >= '%s-%s-%s %s:%s:%s+02' '''
         usage = ApiUsage.objects.raw(raw_sql, params=[year, month, day, hour, minutes, seconds])
         logger.info('%d api usage found' % len(usage))
         return usage

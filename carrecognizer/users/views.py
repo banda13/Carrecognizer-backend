@@ -53,7 +53,6 @@ class CreateUserAPIView(APIView):
 
 
 class UserDetailAPI(RetrieveAPIView):
-    # Allow only authenticated users to access this url
     permission_classes = (IsAuthenticated,)
     serializer_class = UserSerializer
 
