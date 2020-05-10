@@ -7,9 +7,8 @@ import sys
 import tarfile
 import tensorflow.compat.v1 as tf
 
-from classifiers.pipline.make_detection.utils import create_category_index_from_labelmap, \
-    reframe_box_masks_to_image_masks
-from classifiers.pipline.make_detection.visualization_utils import visualize_boxes_and_labels_on_image_array
+from resources.make_detection.utils import create_category_index_from_labelmap, reframe_box_masks_to_image_masks
+from resources.make_detection.visualization_utils import visualize_boxes_and_labels_on_image_array
 
 tf.disable_v2_behavior()
 import zipfile
