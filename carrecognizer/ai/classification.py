@@ -129,4 +129,4 @@ class ClassificationException(Exception):
 
     def __init__(self, message, error):
         super().__init__(message)
-        logger.error('Classification exception: %s' % message, error)
+        logger.error('Classification exception: {}'.format(message), error)

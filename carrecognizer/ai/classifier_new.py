@@ -9,7 +9,7 @@ import tensorflow as tf
 from keras.engine.saving import load_model
 from keras_preprocessing.image import load_img, img_to_array
 
-from core.models import ClassificationResultItem
+from core.models import ClassificationResultItem, ClassificationResult
 from utils.cr_utils import Singleton
 from resources.make_detection.object_detector import ObjectDetector
 
@@ -18,6 +18,12 @@ PATH_TO_LABELS = "resources/make_detection/annotations/label_map.pbtxt"
 
 logger = logging.getLogger(__name__)
 
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+config.gpu_options.per_process_gpu_memory_fraction = 0.6
+
+session = tf.Session(config=config)
+keras.backend.set_session(session)
 
 class ClassifierNew(object, metaclass=Singleton):
 
@@ -25,20 +31,20 @@ class ClassifierNew(object, metaclass=Singleton):
         self.image_width = width
         self.image_height = height
 
-        print("Loading make detector...")
+        logger.info("Loading make detector...")
         self.obj = ObjectDetector(PATH_TO_FROZEN_GRAPH, PATH_TO_LABELS)
 
-        print("Loading make classifier...")
+        logger.info("Loading make classifier...")
         self.make_classifier = self.load_keras_model("resources/make_classifier/Fer")
 
-        print("Loading model classifiers...")
+        logger.info("Loading model classifiers...")
         self.model_classifiers = {}
         for name in os.listdir("resources/model_classifier/"):
-            print("Loading: {}...".format(name))
-            if name == 'Cabat':
-                classifier = self.load_keras_model("model_classifier/" + name)
-                model = classifier['categories'][0].split("-")[0].lower()
-                self.model_classifiers[model] = classifier
+            logger.info("Loading: {}...".format(name))
+            # if name == 'Cabat':
+            classifier = self.load_keras_model("resources/model_classifier/" + name)
+            model = classifier['categories'][0].split("-")[0].lower()
+            self.model_classifiers[model] = classifier
 
     def load_keras_model(self, path):
         class_dictionary = np.load(path + "/class_indices.npy", allow_pickle=True).item()
@@ -53,6 +59,7 @@ class ClassifierNew(object, metaclass=Singleton):
         f.close()
 
         model = load_model(path + "/model.h5")
+        model._make_predict_function()
         with open(path + "/props.json") as f:
             data = json.load(f)
             return {
@@ -73,13 +80,15 @@ class ClassifierNew(object, metaclass=Singleton):
         return image_big, image_small
 
     def make_top3_prediction(self, classifier, image):
-        prediction = classifier['model'].predict(image).reshape(classifier['num_classes'])
-        idx_prediction = np.argsort(-prediction, axis=0)
-        top3_label = {
-            classifier["inv_map"][idx_prediction[0]].lower(): prediction[idx_prediction[0]],
-            classifier["inv_map"][idx_prediction[1]].lower(): prediction[idx_prediction[1]],
-            classifier["inv_map"][idx_prediction[2]].lower(): prediction[idx_prediction[2]]}
-        return top3_label
+        with session.as_default():
+            with session.graph.as_default():
+                prediction = classifier['model'].predict(image).reshape(classifier['num_classes'])
+                idx_prediction = np.argsort(-prediction, axis=0)
+                top3_label = {
+                    classifier["inv_map"][idx_prediction[0]].lower(): prediction[idx_prediction[0]],
+                    classifier["inv_map"][idx_prediction[1]].lower(): prediction[idx_prediction[1]],
+                    classifier["inv_map"][idx_prediction[2]].lower(): prediction[idx_prediction[2]]}
+                return top3_label
 
     def classify(self, classification_data):
         logger.info("Classification started for image {}".format(classification_data.id))
@@ -100,7 +109,8 @@ class ClassifierNew(object, metaclass=Singleton):
         top3_make = self.make_top3_prediction(self.make_classifier, image_np)
         logger.debug("Make classification top 3 result: {}".format(top3_make))
 
-        final = []
+        final = ClassificationResult()
+        classification_data.add_result(final)
         # decide make
         if len(result) == 0:
             for make, acc in top3_make.items():
@@ -108,22 +118,22 @@ class ClassifierNew(object, metaclass=Singleton):
                     classifier = self.model_classifiers[make]
                     logger.info("Classify for make {}".format(make))
                     for model, acc in self.make_top3_prediction(classifier, image_np).items():
-                        if model not in final or acc > final[model]:
-                            item = ClassificationResultItem()
-                            item.name = make + "-" + model
-                            item.accuracy = acc
-                            result.add_item(item)
+                        # if model not in final or acc > final[model]:
+                        item = ClassificationResultItem()
+                        item.name = model
+                        item.accuracy = acc
+                        final.add_item(item)
         else:
             obj_res = result[0]
             classifier = self.model_classifiers[obj_res[0]]
             logger.info("Classify for make {}".format(obj_res[0]))
             for model, acc in self.make_top3_prediction(classifier, image_np).items():
-                if model not in final or acc > final[model]:
-                    item = ClassificationResultItem()
-                    item.name = obj_res + "-" + model
-                    item.accuracy = acc
-                    result.add_item(item)
-        logger.info("Classification result: {}".format(result))
-        return result
+                # if model not in final or acc > final[model]:
+                item = ClassificationResultItem()
+                item.name = model
+                item.accuracy = acc
+                final.add_item(item)
+        logger.info("Classification result: {}".format(final))
+        return final
 
 
