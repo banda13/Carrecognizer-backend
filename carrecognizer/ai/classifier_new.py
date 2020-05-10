@@ -9,8 +9,8 @@ import tensorflow as tf
 from keras.engine.saving import load_model
 from keras_preprocessing.image import load_img, img_to_array
 
-from carrecognizer.core.models import ClassificationResultItem
-from carrecognizer.utils.cr_utils import Singleton
+from core.models import ClassificationResultItem
+from utils.cr_utils import Singleton
 from resources.make_detection.object_detector import ObjectDetector
 
 PATH_TO_FROZEN_GRAPH = "resources/make_detection/model/fine_tuned_model/frozen_inference_graph.pb"

@@ -1,8 +1,5 @@
-from ai.classifier import CleverClassifier  # initialize classifier
+from ai.classifier_new import ClassifierNew  # initialize classifier
 from django.apps import AppConfig
-
-from carrecognizer.ai.classifier_new import ClassifierNew
-
 
 class MyAppConfig(AppConfig):
     # base_classifier = CleverClassifier('Haupaca')
