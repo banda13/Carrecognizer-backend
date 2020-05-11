@@ -19,6 +19,8 @@ import logging
 
 from utils.cr_utils import get_error_response
 
+from carrecognizer.utils.security_provider import decode
+
 logger = logging.getLogger(__name__)
 
 
@@ -74,7 +76,7 @@ class LoginUserAPIView(APIView):
     def post(self, request):
         try:
             email = request.data['email']
-            password = request.data['password']  # TODO encode this!
+            password = decode(request.data['password'])
             ip, is_routable = get_client_ip(request)
 
             logger.info("Logging in with email %s from ip %s" % (email, ip))
