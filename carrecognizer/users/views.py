@@ -19,7 +19,7 @@ import logging
 
 from utils.cr_utils import get_error_response
 
-from carrecognizer.utils.security_provider import decode
+from utils.security_provider import encode
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +34,7 @@ class CreateUserAPIView(APIView):
             logger.info("Creating new user %s", str(user))
 
             user['username'] = user['email'].split('@')[0]
+            user['password'] = encode(user['password'])
 
             serializer = UserSerializer(data=user)
             serializer.is_valid(raise_exception=True)
@@ -76,7 +77,7 @@ class LoginUserAPIView(APIView):
     def post(self, request):
         try:
             email = request.data['email']
-            password = decode(request.data['password'])
+            password = encode(request.data['password'])
             ip, is_routable = get_client_ip(request)
 
             logger.info("Logging in with email %s from ip %s" % (email, ip))
