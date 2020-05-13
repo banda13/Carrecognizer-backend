@@ -3,6 +3,8 @@ from django.db import models, transaction
 from django.contrib.auth.models import AbstractUser, PermissionsMixin
 from django.utils import timezone
 
+from carrecognizer.utils.security_provider import encode
+
 
 class UserManager(BaseUserManager):
 
@@ -15,7 +17,7 @@ class UserManager(BaseUserManager):
         try:
             with transaction.atomic():
                 user = self.model(email=email, **extra_fields)
-                user.set_password(password)
+                user.set_password(encode(password))
                 user.save(using=self._db)
                 return user
         except:
