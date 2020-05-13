@@ -1,6 +1,10 @@
+import logging
 from django.contrib.auth.middleware import get_user
 from django.utils.functional import SimpleLazyObject
+from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+
+logger = logging.getLogger(__name__)
 
 
 class JWTAuthenticationMiddleware(object):
@@ -8,15 +12,19 @@ class JWTAuthenticationMiddleware(object):
         self.get_response = get_response
 
     def __call__(self, request):
-        request.user = SimpleLazyObject(lambda:self.__class__.get_jwt_user(request))
+        request.user = SimpleLazyObject(lambda: self.__class__.get_jwt_user(request))
         return self.get_response(request)
 
     @staticmethod
     def get_jwt_user(request):
-        user = get_user(request)
-        if user.is_authenticated:
-            return user
-        jwt_authentication = JSONWebTokenAuthentication()
-        if jwt_authentication.get_jwt_value(request):
-            user, jwt = jwt_authentication.authenticate(request)
+        try:
+            user = get_user(request)
+            if user.is_authenticated:
+                return user
+            jwt_authentication = JSONWebTokenAuthentication()
+            if jwt_authentication.get_jwt_value(request):
+                user, jwt = jwt_authentication.authenticate(request)
+        except AuthenticationFailed as e:
+            logger.error("Authentication failed: {}".format(e))
+            return None
         return user

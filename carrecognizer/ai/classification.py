@@ -112,7 +112,8 @@ class CClassifier(object):
             logger.info("New classification created with id %d" % self.classification.id)
 
             self.classification_result = MyAppConfig.base_classifier.classify(self.classification)
-            self.classification.time = time.time() - start_time
+            self.classification.time = (time.time() - start_time)
+            self.classification.save()
             logger.info('Classification ended at: %s' % str(self.classification.time))
         except Exception as e:
             raise ClassificationException('Failed to classify image', e)

@@ -1,4 +1,5 @@
 import json
+import numpy as np
 import logging
 
 from django.core.serializers.json import DjangoJSONEncoder
@@ -8,8 +9,10 @@ from django.utils import timezone
 from django.utils.datetime_safe import datetime
 
 from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.views import APIView
 
+from core.models import Classification
 from stats.models import ApiUsage
 from stats.serializers import ApiUsageSerializer
 
@@ -55,3 +58,13 @@ class ApiUsageList(generics.ListCreateAPIView):
         context['seconds'] = int(self.request.GET.get('sec', now.second))
 
         return context
+
+
+class ClassificationTimeView(APIView):
+    permission_classes = (AllowAny,)
+    def get(self, request):
+        class_times = Classification.objects.values_list('time', flat=True).exclude(time=-1).order_by('-id')[:10]
+        avg_time = np.mean(class_times)
+
+        response = {"avg_class_time": avg_time}
+        return JsonResponse(response, status=200)
