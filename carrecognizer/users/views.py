@@ -67,7 +67,7 @@ class UserDetailAPI(RetrieveAPIView):
             serializer = self.serializer_class(request.user)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
-            logger.exception("Unexpected server error while getting user details")
+            logger.error("Unexpected server error while getting user details: {}".format(e))
             return get_error_response("Unexpected server error")
 
 
