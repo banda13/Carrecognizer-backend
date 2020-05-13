@@ -30,7 +30,7 @@ MESSENGER_ACCESS_TOKEN = "EAAECfzD3f4EBACw3TVuZClCSpZBHZC49qDcSJPIROZBUnI0kwHZCx
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', 'http://23.102.10.117/', 'carrecognizer.northeurope.cloudapp.azure.com', '192.168.0.185', '176.63.245.216']
+ALLOWED_HOSTS = ['localhost', 'http://23.102.10.117/', 'carrecognizer.northeurope.cloudapp.azure.com', '192.168.0.185', '178.48.246.170']
 
 
 # Application definition
