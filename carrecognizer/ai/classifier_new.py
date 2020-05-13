@@ -43,7 +43,7 @@ class ClassifierNew(object, metaclass=Singleton):
             logger.info("Loading: {}...".format(name))
             # if name == 'Cabat':
             classifier = self.load_keras_model("resources/model_classifier/" + name)
-            model = classifier['categories'][0].split("-")[0].lower()
+            model = classifier['categories'][0].split("-")[0].lower().replace("_", "").replace(" ", "")
             self.model_classifiers[model] = classifier
 
     def load_keras_model(self, path):
@@ -85,9 +85,12 @@ class ClassifierNew(object, metaclass=Singleton):
                 prediction = classifier['model'].predict(image).reshape(classifier['num_classes'])
                 idx_prediction = np.argsort(-prediction, axis=0)
                 top3_label = {
-                    classifier["inv_map"][idx_prediction[0]].lower(): prediction[idx_prediction[0]],
-                    classifier["inv_map"][idx_prediction[1]].lower(): prediction[idx_prediction[1]],
-                    classifier["inv_map"][idx_prediction[2]].lower(): prediction[idx_prediction[2]]}
+                    classifier["inv_map"][idx_prediction[0]].lower().replace("_", "").replace(" ", ""): prediction[
+                        idx_prediction[0]],
+                    classifier["inv_map"][idx_prediction[1]].lower().replace("_", "").replace(" ", ""): prediction[
+                        idx_prediction[1]],
+                    classifier["inv_map"][idx_prediction[2]].lower().replace("_", "").replace(" ", ""): prediction[
+                        idx_prediction[2]]}
                 return top3_label
 
     def classify(self, classification_data):
@@ -125,8 +128,9 @@ class ClassifierNew(object, metaclass=Singleton):
                         final.add_item(item)
         else:
             obj_res = result[0]
-            classifier = self.model_classifiers[obj_res[0]]
-            logger.info("Classify for make {}".format(obj_res[0]))
+            make = obj_res[0].lower().replace("_", "").replace(" ", "")
+            classifier = self.model_classifiers[make]
+            logger.info("Classify for make {}".format(make))
             for model, acc in self.make_top3_prediction(classifier, image_np).items():
                 # if model not in final or acc > final[model]:
                 item = ClassificationResultItem()
